@@ -7,9 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class StoreApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(StoreApplication.class, args);
-		var placeOrder = new OrderService();
-		placeOrder.placeOrder();
+//		SpringApplication.run(StoreApplication.class, args);
+		var orderService = new OrderService(new StripePaymentService());
+		orderService.placeOrder();
 	}
 
 }
