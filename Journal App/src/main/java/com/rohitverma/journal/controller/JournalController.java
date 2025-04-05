@@ -1,6 +1,9 @@
 package com.rohitverma.journal.controller;
 
 import com.rohitverma.journal.model.JournalEntry;
+import com.rohitverma.journal.service.JournalEntryService;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -11,37 +14,38 @@ import java.util.Map;
 @RestController
 @RequestMapping("/journals")
 public class JournalController {
-    private Map<Long, JournalEntry> journalList = new HashMap<>();
+
+    @Autowired
+    JournalEntryService journalEntryService;
 
     @GetMapping
     public List<JournalEntry> getAllJournals()
     {
-        return  new ArrayList<>(journalList.values());
+        return journalEntryService.getAllEntries();
     }
 
     @PostMapping
-    public boolean addJournal(@RequestBody JournalEntry journal)
+    public JournalEntry addJournal(@RequestBody JournalEntry journal)
     {
-        journalList.put(journal.getId(), journal);
-        return true;
+        journalEntryService.saveEntry(journal);
+        return journal;
     }
 
     @GetMapping("/{id}")
-    public JournalEntry getJournalById(@PathVariable("id") long id)
+    public JournalEntry getJournalById(@PathVariable("id") ObjectId id)
     {
-        return journalList.get(id);
+        return journalEntryService.getEntryById(id).orElse(null);
     }
-
-    @PutMapping("{id}")
-    public JournalEntry updateJournalById(@PathVariable("id") long id, @RequestBody JournalEntry journal)
-    {
-        journalList.put(id, journal);
-        return journalList.get(id);
-    }
-
+//
+//    @PutMapping("{id}")
+//    public JournalEntry updateJournalById(@PathVariable("id") long id, @RequestBody JournalEntry journal)
+//    {
+//
+//    }
+//
     @DeleteMapping("{id}")
-    public JournalEntry deleteJournalById(@PathVariable("id") long id)
+    public void deleteJournalById(@PathVariable("id") ObjectId id)
     {
-        return journalList.remove(id);
+        journalEntryService.deleteEntryById(id);
     }
 }

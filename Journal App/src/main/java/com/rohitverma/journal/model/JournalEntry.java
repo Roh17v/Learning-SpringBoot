@@ -1,20 +1,42 @@
 package com.rohitverma.journal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+
+@Document(collection = "JournalEntries")
 public class JournalEntry {
 
-    private long id;
+    @Id
+    private ObjectId id;
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
 
     private String title;
 
     private String content;
 
-    public long getId() {
-        return id;
+    private Date date = new Date();
+
+    public Date getDate() {
+        return date;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setDate(Date date) {
+        this.date = date == null? new Date() : date;
     }
+
 
     public String getTitle() {
         return title;
