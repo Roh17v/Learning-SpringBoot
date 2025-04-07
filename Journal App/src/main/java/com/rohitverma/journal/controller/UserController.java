@@ -26,7 +26,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody User user) {
         try{
-            userService.createUser(user);
+            userService.saveUser(user);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
         catch(Exception e){
@@ -40,7 +40,7 @@ public class UserController {
         if(oldUser != null){
             oldUser.setUsername(user.getUsername());
             oldUser.setPassword(user.getPassword());
-            userService.createUser(oldUser);
+            userService.saveUser(oldUser);
             return new ResponseEntity<>(oldUser, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

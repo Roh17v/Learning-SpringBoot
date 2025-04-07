@@ -1,6 +1,7 @@
 package com.rohitverma.journal.service;
 
 import com.rohitverma.journal.model.JournalEntry;
+import com.rohitverma.journal.model.User;
 import com.rohitverma.journal.repository.JournalEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class JournalEntryService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
+    @Autowired
+    private UserService userService;
+
     public void saveEntry(JournalEntry entry) {
         journalEntryRepository.save(entry);
     }
@@ -23,6 +27,7 @@ public class JournalEntryService {
         return journalEntryRepository.findAll();
     }
 
+
     public Optional<JournalEntry> getEntryById(ObjectId id) {
         return journalEntryRepository.findById(id);
     }
@@ -30,4 +35,5 @@ public class JournalEntryService {
     public void deleteEntryById(ObjectId id) {
         journalEntryRepository.deleteById(id);
     }
+
 }
