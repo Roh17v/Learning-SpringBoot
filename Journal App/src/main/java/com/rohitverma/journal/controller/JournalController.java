@@ -30,7 +30,6 @@ public class JournalController {
         List<JournalEntry> entries = user.get().getJournalEntries();
 
         return new ResponseEntity<>(entries, HttpStatus.OK);
-
     }
 
     @PostMapping("{username}")
@@ -39,10 +38,13 @@ public class JournalController {
         try {
             Optional<User> user = userService.findUserByUsername(username);
             if(!user.isPresent()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            journalEntryService.saveEntry(journal);
-            user.get().getJournalEntries().add(journal);
-            userService.saveUser(user.get());
-            return new ResponseEntity<>(journal, HttpStatus.CREATED);
+            if(journalEntryService.saveEntry(journal, username))
+            {
+                return new ResponseEntity<>(journal, HttpStatus.CREATED);
+            }
+            else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         }
         catch(Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -64,12 +66,8 @@ public class JournalController {
     @PutMapping("id/{id}")
     public ResponseEntity<?> updateJournalById(@PathVariable("id") ObjectId id, @RequestBody JournalEntry journal)
     {
-        JournalEntry oldEntry = journalEntryService.getEntryById(id).orElse(null);
-        if(oldEntry != null) {
-            oldEntry.setTitle(journal.getTitle() != null && !journal.getTitle().equals("") ? journal.getTitle() : oldEntry.getTitle());
-            oldEntry.setContent(journal.getContent() != null && !journal.getContent().equals("") ? journal.getContent() : oldEntry.getContent());
-            journalEntryService.saveEntry(oldEntry);
-            return new ResponseEntity<JournalEntry>(oldEntry, HttpStatus.OK);
+        if(journalEntryService.updateJournalEntry(id, journal)) {
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
