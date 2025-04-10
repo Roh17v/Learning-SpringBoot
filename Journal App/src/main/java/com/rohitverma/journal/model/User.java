@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Document(collection = "User")
+@Document(collection = "Users")
 @Getter
 @Setter
 public class User
@@ -26,6 +26,8 @@ public class User
     private String username;
     @NonNull
     private String password;
+
+    private List<String> roles;
     @DBRef
     List<JournalEntry> journalEntries = new ArrayList<>();
 }
