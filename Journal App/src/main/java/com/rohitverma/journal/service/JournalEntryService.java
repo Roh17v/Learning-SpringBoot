@@ -24,11 +24,10 @@ public class JournalEntryService {
 
     @Transactional
     public boolean saveEntry(JournalEntry entry, String username) {
-        Optional<User> user = userService.findUserByUsername(username);
-        if(!user.isPresent()) return false;
+        User user = userService.findUserByUsername(username);
         journalEntryRepository.save(entry);
-        user.get().getJournalEntries().add(entry);
-        userService.saveUser(user.get());
+        user.getJournalEntries().add(entry);
+        userService.saveUser(user);
         return true;
     }
 

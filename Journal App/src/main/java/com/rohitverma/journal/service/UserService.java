@@ -21,6 +21,7 @@ public class UserService {
     private UserRepository userRepository;
 
     public void saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -39,11 +40,11 @@ public class UserService {
     }
 
 
-    public void deleteUserById(ObjectId id) {
-        userRepository.deleteById(id);
+    public void deleteUserByUsername(String username) {
+        userRepository.deleteUserByUsername(username);
     }
 
-    public Optional<User> findUserByUsername(String username) {
+    public User findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -18,31 +20,32 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping
-    public ResponseEntity<?> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    @PutMapping()
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = auth.getName();
+            User userFound = userService.findUserByUsername(username);
+
+            userFound.setUsername(user.getUsername());
+            userFound.setPassword(user.getPassword());
+            userService.saveUser(userFound);
+            return new ResponseEntity<>(userFound, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        try{
-            userService.saveNewUser(user);
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
+    @DeleteMapping()
+    public ResponseEntity<?> deleteUser() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            userService.deleteUserByUsername(auth.getName());
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        catch(Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") ObjectId id, @RequestBody User user) {
-        User oldUser = userService.getUserById(id).orElse(null);
-        if(oldUser != null){
-            oldUser.setUsername(user.getUsername());
-            oldUser.setPassword(user.getPassword());
-            userService.saveUser(oldUser);
-            return new ResponseEntity<>(oldUser, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

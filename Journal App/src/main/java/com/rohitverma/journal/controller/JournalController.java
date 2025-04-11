@@ -25,9 +25,9 @@ public class JournalController {
     @GetMapping("{username}")
     public ResponseEntity<?> getAllJournalsForUser(@PathVariable String username)
     {
-        Optional<User> user = userService.findUserByUsername(username);
-        if(!user.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        List<JournalEntry> entries = user.get().getJournalEntries();
+        User user = userService.findUserByUsername(username);
+        if(user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List<JournalEntry> entries = user.getJournalEntries();
 
         return new ResponseEntity<>(entries, HttpStatus.OK);
     }
@@ -36,8 +36,8 @@ public class JournalController {
     public ResponseEntity<JournalEntry> addJournal(@RequestBody JournalEntry journal, @PathVariable String username)
     {
         try {
-            Optional<User> user = userService.findUserByUsername(username);
-            if(!user.isPresent()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            User user = userService.findUserByUsername(username);
+            if(user == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             if(journalEntryService.saveEntry(journal, username))
             {
                 return new ResponseEntity<>(journal, HttpStatus.CREATED);
@@ -76,11 +76,11 @@ public class JournalController {
     public ResponseEntity<?> deleteJournalById(@PathVariable("id") ObjectId id, @PathVariable("username") String username)
     {
         JournalEntry journal = journalEntryService.getEntryById(id).orElse(null);
-        Optional<User> user = userService.findUserByUsername(username);
-        if(journal != null && user.isPresent() && user.get().getJournalEntries().contains(journal)) {
-            user.get().getJournalEntries().remove(journal);
+        User user = userService.findUserByUsername(username);
+        if(journal != null && user != null && user.getJournalEntries().contains(journal)) {
+            user.getJournalEntries().remove(journal);
             journalEntryService.deleteEntryById(journal.getId());
-            userService.saveUser(user.get());
+            userService.saveUser(user);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

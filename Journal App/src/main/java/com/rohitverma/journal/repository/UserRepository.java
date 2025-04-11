@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, ObjectId> {
-    Optional<User> findByUsername(String username);
+    User findByUsername(String username);
+
+    void deleteUserByUsername(String username);
 
     String username(@NonNull String username);
 }
