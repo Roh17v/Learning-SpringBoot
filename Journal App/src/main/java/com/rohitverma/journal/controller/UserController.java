@@ -29,7 +29,7 @@ public class UserController {
 
             userFound.setUsername(user.getUsername());
             userFound.setPassword(user.getPassword());
-            userService.saveUser(userFound);
+            userService.saveNewUser(userFound);
             return new ResponseEntity<>(userFound, HttpStatus.OK);
         }
         catch (Exception e) {
