@@ -89,15 +89,14 @@ public class JournalController {
     @DeleteMapping("id/{id}")
     public ResponseEntity<?> deleteJournalById(@PathVariable("id") ObjectId id)
     {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUsername(authentication.getName());
-        JournalEntry journal = journalEntryService.getEntryById(id).orElse(null);
-        if(journal != null && user.getJournalEntries().contains(journal)) {
-            user.getJournalEntries().remove(journal);
-            journalEntryService.deleteEntryById(journal.getId());
-            userService.saveUser(user);
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User user = userService.findUserByUsername(authentication.getName());
+            journalEntryService.deleteJournalEntry(id, user.getUsername());
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        catch(Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

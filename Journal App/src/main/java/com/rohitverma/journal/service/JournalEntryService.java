@@ -46,6 +46,19 @@ public class JournalEntryService {
         return false;
     }
 
+    @Transactional
+    public boolean deleteJournalEntry(ObjectId id, String username) {
+        User user = userService.findUserByUsername(username);
+        JournalEntry entry = getEntryById(id).orElse(null);
+        if(entry != null && user.getJournalEntries().contains(entry)) {
+            deleteEntryById(id);
+            user.getJournalEntries().remove(entry);
+            userService.saveUser(user);
+            return true;
+        }
+        return false;
+    }
+
     public List<JournalEntry> getAllEntries() {
         return journalEntryRepository.findAll();
     }
