@@ -1,23 +1,29 @@
 package com.rohitverma.journal.service;
 
+import com.rohitverma.journal.model.User;
+import com.rohitverma.journal.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-
+@SpringBootTest
 public class UserServiceTests {
 
-    @ParameterizedTest
-    @CsvSource({
-            "4, 2, 2",
-            "3, 1, 2",
-            "9, 4, 5"
-    })
-    public void testAdd(int expected, int a, int b)
-    {
-        assertEquals(expected, a+b);
-    }
+    @Autowired
+    private UserRepository userRepository;
+
+   @ParameterizedTest
+   @CsvSource({
+           "rohitverma",
+           "ayushverma",
+           "premverma"
+   })
+    public void testGetbyUsername(String username) {
+       User user = userRepository.findByUsername(username);
+       assertTrue(!user.getJournalEntries().isEmpty());
+   }
 }
