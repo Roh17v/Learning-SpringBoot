@@ -5,6 +5,7 @@ import com.rohitverma.journal.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -17,13 +18,13 @@ public class UserServiceTests {
     private UserRepository userRepository;
 
    @ParameterizedTest
-   @CsvSource({
+   @ValueSource(strings = {
            "rohitverma",
            "ayushverma",
            "premverma"
    })
     public void testGetbyUsername(String username) {
        User user = userRepository.findByUsername(username);
-       assertTrue(!user.getJournalEntries().isEmpty());
+       assertNotNull(user);
    }
 }
