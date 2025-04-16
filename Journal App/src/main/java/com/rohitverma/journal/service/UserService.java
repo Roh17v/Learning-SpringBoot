@@ -1,8 +1,10 @@
 package com.rohitverma.journal.service;
 
+import ch.qos.logback.classic.Logger;
 import com.rohitverma.journal.model.User;
 import com.rohitverma.journal.repository.UserRepository;
 import org.bson.types.ObjectId;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +19,8 @@ public class UserService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(UserService.class);
+
     @Autowired
     private UserRepository userRepository;
 
@@ -25,9 +29,15 @@ public class UserService {
     }
 
     public void saveNewUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Arrays.asList("USER"));
-        userRepository.save(user);
+        try{
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(Arrays.asList("USER"));
+            userRepository.save(user);
+        }
+        catch(Exception e){
+            logger.error("Error while saving new user: {}", user.getUsername(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     public List<User> getAllUsers() {
