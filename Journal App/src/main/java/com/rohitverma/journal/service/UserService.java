@@ -3,6 +3,7 @@ package com.rohitverma.journal.service;
 import ch.qos.logback.classic.Logger;
 import com.rohitverma.journal.model.User;
 import com.rohitverma.journal.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class UserService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -35,7 +35,10 @@ public class UserService {
             userRepository.save(user);
         }
         catch(Exception e){
-            logger.error("Error while saving new user: {}", user.getUsername(), e);
+            log.error("hahaha");
+            log.info("hahaha");
+            log.trace("hahaha");
+            log.debug("hahaha");
             throw new RuntimeException(e);
         }
     }
