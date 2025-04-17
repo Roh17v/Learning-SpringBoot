@@ -55,10 +55,10 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> greetUser() {
+    public ResponseEntity<?> greetUser(@RequestParam String city) {
         try{
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            WeatherResponse weather = weatherService.getWeather();
+            WeatherResponse weather = weatherService.getWeather(city);
             String greeting = "Hi " + auth.getName() + ". Today the  weather of "+ weather.getLocation().getName() +" is : "+ weather.getCurrent().getTemperature();
             return new ResponseEntity<>(greeting,HttpStatus.OK);
         }
