@@ -1,8 +1,10 @@
 package com.rohitverma.journal.controller;
 
+import com.rohitverma.journal.api.response.WeatherResponse;
 import com.rohitverma.journal.model.User;
 
 import com.rohitverma.journal.service.UserService;
+import com.rohitverma.journal.service.WeatherService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +21,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    WeatherService weatherService;
 
     @PutMapping()
     public ResponseEntity<?> updateUser(@RequestBody User user) {
@@ -43,6 +48,19 @@ public class UserController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             userService.deleteUserByUsername(auth.getName());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> greetUser() {
+        try{
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            WeatherResponse weather = weatherService.getWeather();
+            String greeting = "Hi " + auth.getName() + ". Today the  weather of "+ weather.getLocation().getName() +" is : "+ weather.getCurrent().getTemperature();
+            return new ResponseEntity<>(greeting,HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
