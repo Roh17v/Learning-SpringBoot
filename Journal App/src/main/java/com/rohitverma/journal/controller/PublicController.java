@@ -43,15 +43,7 @@ public class PublicController {
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@RequestBody User user, HttpServletResponse response) {
         try {
-            User userToSave = new User();
-            userToSave.setUsername(user.getUsername());
-            userToSave.setPassword(user.getPassword());
-
-            userService.saveNewUser(userToSave);
-
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
-            );
+            userService.saveNewUser(user);
 
             final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
             final String jwt = jwtUtils.generateToken(userDetails);
@@ -63,7 +55,7 @@ public class PublicController {
             cookie.setMaxAge(60 * 60);
             response.addCookie(cookie);
 
-            return new ResponseEntity<>(userToSave, HttpStatus.CREATED);
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
 
         } catch (DataIntegrityViolationException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
