@@ -92,8 +92,11 @@ public class JournalController {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User user = userService.findUserByUsername(authentication.getName());
-            journalEntryService.deleteJournalEntry(id, user.getUsername());
-            return new ResponseEntity<>(HttpStatus.OK);
+            if(journalEntryService.deleteJournalEntry(id, user.getUsername()))
+            {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         catch(Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

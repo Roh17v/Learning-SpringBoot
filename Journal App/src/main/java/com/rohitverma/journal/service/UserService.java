@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -30,19 +31,15 @@ public class UserService {
     }
 
     public void saveNewUser(User user) {
-        try{
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(Arrays.asList("USER"));
-            userRepository.save(user);
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            throw new DataIntegrityViolationException("Username already exists");
         }
-        catch(Exception e){
-            log.error("hahaha");
-            log.info("hahaha");
-            log.trace("hahaha");
-            log.debug("hahaha");
-            throw new RuntimeException(e);
-        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(Arrays.asList("USER"));
+        userRepository.save(user);
     }
+
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
