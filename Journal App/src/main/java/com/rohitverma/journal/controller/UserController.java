@@ -5,6 +5,9 @@ import com.rohitverma.journal.model.User;
 
 import com.rohitverma.journal.service.UserService;
 import com.rohitverma.journal.service.WeatherService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -65,5 +68,21 @@ public class UserController {
         catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response)
+    {
+        Cookie cookie = new Cookie("jwt", "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+
+        response.addCookie(cookie);
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+
+        return new ResponseEntity<>("Logged out Successfully!",HttpStatus.OK);
     }
 }
